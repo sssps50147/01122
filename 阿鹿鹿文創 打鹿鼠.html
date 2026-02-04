@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<!-- saved from url=(0043)https://ssps50147.github.io/0109/index.html -->
+<html lang="zh-Hant"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>阿鹿鹿文創 打鹿鼠</title>
+
+  <style>
+    :root{
+      --bg1:#ffd6e7;
+      --bg2:#fff4f9;
+      --text:#111;
+      --shadow: 0 10px 30px rgba(0,0,0,.12);
+      --safeB: env(safe-area-inset-bottom);
+      --safeT: env(safe-area-inset-top);
+
+      /* 黃框 HUD 風格 */
+      --hudBg1:#0b1a33;
+      --hudBg2:#122a4f;
+      --hudText: rgba(255,255,255,.92);
+      --hudSub: rgba(255,255,255,.72);
+    }
+
+    html,body{height:100%; margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Arial, sans-serif;}
+    body{
+      background: linear-gradient(180deg,var(--bg1),var(--bg2));
+      color:var(--text);
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+    }
+    .wrap{
+      width:min(980px, 100%);
+      padding: calc(14px + var(--safeT)) 14px calc(18px + var(--safeB));
+      box-sizing:border-box;
+    }
+
+    /* ====== 黃框 HUD ====== */
+    .hud{
+      background: linear-gradient(180deg,var(--hudBg1),var(--hudBg2));
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.06);
+      padding: 14px;
+      color: var(--hudText);
+      overflow:hidden;
+    }
+    .hudTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .hudTitle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight: 1000;
+      letter-spacing: .5px;
+      font-size: 22px;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+    .hudTitle .icon{
+      font-size: 20px;
+      opacity:.95;
+      transform: translateY(1px);
+    }
+    .hudPill{
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.82);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-weight: 900;
+      cursor:pointer;
+      white-space: nowrap;
+    }
+    .hudStats{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:12px;
+    }
+    .hudStat{
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 18px;
+      padding: 14px 14px 12px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    }
+    .hudStat .label{
+      font-size: 14px;
+      color: var(--hudSub);
+      margin-bottom: 10px;
+      font-weight: 800;
+    }
+    .hudStat .value{
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 1000;
+      letter-spacing: .2px;
+    }
+    .hudStat .value small{
+      font-size: 18px;
+      font-weight: 900;
+      opacity:.85;
+      margin-left: 2px;
+    }
+
+    /* ====== 其他區塊 ====== */
+    .panel{ display:grid; grid-template-columns: 1fr; gap:12px; margin-top:12px; }
+
+    .card{
+      background: rgba(255,255,255,.75);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      padding:10px 12px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    /* 控制區（音量） */
+    .controls{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+    }
+    .controlsRow{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:10px;
+      align-items:center;
+    }
+    .pill{
+      border:0;
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow: 0 8px 18px rgba(0,0,0,.12);
+      background:#fff;
+    }
+    .slider{ width:100%; accent-color:#ff4aa2; }
+    .hint{ font-size:12px; opacity:.75; line-height:1.4; }
+
+    /* 遊戲區 */
+    .stage{
+      background: #fff8fc;
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:12px;
+      position:relative;
+      overflow:hidden;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:12px;
+    }
+    .hole{
+      position:relative;
+      aspect-ratio: 1 / 1;
+      border-radius:18px;
+      background: rgba(255,255,255,.65);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.9), inset 0 -8px 20px rgba(0,0,0,.08);
+      overflow:hidden;
+      cursor:pointer;
+      user-select:none;
+      touch-action: manipulation;
+    }
+    .moleWrap{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      pointer-events:none;
+      opacity:0;
+    }
+    .hole.active .moleWrap{ opacity:1; }
+    .mole{
+      width:82%;
+      height:auto;
+      margin-bottom:-6%;
+      filter: drop-shadow(0 10px 12px rgba(0,0,0,.18));
+      transform: translateZ(0);
+    }
+
+    /* 命中抖一下 */
+    @keyframes shake {
+      0%   { transform: translateX(0) scale(0.98); }
+      25%  { transform: translateX(-4px) scale(0.98); }
+      50%  { transform: translateX(4px) scale(0.98); }
+      75%  { transform: translateX(-3px) scale(0.98); }
+      100% { transform: translateX(0) scale(0.98); }
+    }
+    .hole.shake .mole{ animation: shake 160ms ease-in-out; }
+
+    /* 遮罩與視窗 */
+    .overlay{
+      position:absolute;
+      inset:0;
+      background: rgba(20,10,15,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    .overlay.show{ display:flex; }
+    .modal{
+      width:min(640px, 100%);
+      background: rgba(255,255,255,.95);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+    .modal h2{ margin:0 0 8px; font-size:28px; letter-spacing:.5px; }
+    .modal p{ margin:8px 0; line-height:1.55; }
+
+    .btnrow{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+    button.primary{
+      border:0;
+      border-radius:14px;
+      padding:10px 14px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow: 0 8px 18px rgba(0,0,0,.12);
+      background:#ff4aa2;
+      color:#fff;
+    }
+    button.ghost{
+      border:0;
+      border-radius:14px;
+      padding:10px 14px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow: 0 8px 18px rgba(0,0,0,.12);
+      background:#fff;
+    }
+    button.danger{
+      border:0;
+      border-radius:14px;
+      padding:10px 14px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow: 0 8px 18px rgba(0,0,0,.12);
+      background:#111;
+      color:#fff;
+    }
+
+    table{ width:100%; border-collapse:collapse; }
+    th,td{ padding:8px 6px; border-bottom:1px solid rgba(0,0,0,.08); text-align:left; font-size:14px; }
+    th{ font-size:12px; opacity:.7; }
+
+    /* 結算圖 */
+    .endImg{
+      width: 110px;
+      height: auto;
+      display:block;
+      margin: 4px auto 8px;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,.14));
+    }
+
+    /* ✅ 開始視窗：得分列表（用圖檔當小圖案） */
+    .scoreList{ margin-top:10px; line-height:1.7; }
+    .scoreRow{ display:flex; align-items:center; gap:10px; margin:6px 0; }
+    .scoreIcon{
+      width:22px; height:22px;
+      border-radius:6px;
+      object-fit:contain;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,.15));
+      background: rgba(255,255,255,.7);
+    }
+    .scoreText{ font-weight:700; }
+    .scoreText b{ font-weight:1000; }
+
+    @media (max-width:520px){
+      .hudTitle{ font-size: 20px; }
+      .hudStat .value{ font-size: 30px; }
+      .hudStats{ gap:10px; }
+      .modal h2{ font-size:26px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- 黃框 HUD：標題列 + 3 欄 -->
+    <div class="hud">
+      <div class="hudTop">
+        <div class="hudTitle">
+          <span class="icon">🦒</span>
+          <span>阿鹿鹿文創 打鹿鼠</span>
+        </div>
+        <button class="hudPill" id="rankBtn" type="button">本機排行榜</button>
+      </div>
+
+      <div class="hudStats">
+        <div class="hudStat">
+          <div class="label">分數</div>
+          <div class="value" id="score">0</div>
+        </div>
+        <div class="hudStat">
+          <div class="label">連擊</div>
+          <div class="value" id="combo">0</div>
+        </div>
+        <div class="hudStat">
+          <div class="label">速度</div>
+          <div class="value"><span id="speed">1.00</span><small>x</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <!-- 音量控制 -->
+      <div class="card controls">
+        <div class="controlsRow">
+          <div>
+            <div class="label">環境 BGM（輕音樂）</div>
+            <div class="hint">免付費・程式生成・可調音量</div>
+          </div>
+          <button class="pill" id="bgmToggleBtn" type="button">BGM：ON</button>
+        </div>
+        <input class="slider" id="bgmVol" type="range" min="0" max="100" value="28">
+
+        <div class="controlsRow" style="margin-top:6px;">
+          <div>
+            <div class="label">點擊回饋音效</div>
+            <div class="hint">命中會有回饋音・可調音量</div>
+          </div>
+          <button class="pill" id="sfxToggleBtn" type="button">SFX：ON</button>
+        </div>
+        <input class="slider" id="sfxVol" type="range" min="0" max="100" value="42">
+      </div>
+
+      <div class="stage">
+        <div class="grid" id="grid"><div class="hole" data-idx="0"><div class="moleWrap"><img class="mole" alt="角色" draggable="false"></div></div><div class="hole" data-idx="1"><div class="moleWrap"><img class="mole" alt="角色" draggable="false"></div></div><div class="hole" data-idx="2"><div class="moleWrap"><img class="mole" alt="角色" draggable="false"></div></div><div class="hole" data-idx="3"><div class="moleWrap"><img class="mole" alt="角色" draggable="false"></div></div><div class="hole" data-idx="4"><div class="moleWrap"><img class="mole" alt="角色" draggable="false"></div></div><div class="hole" data-idx="5"><div class="moleWrap"><img class="mole" alt="角色" draggable="false"></div></div><div class="hole" data-idx="6"><div class="moleWrap"><img class="mole" alt="角色" draggable="false"></div></div><div class="hole" data-idx="7"><div class="moleWrap"><img class="mole" alt="角色" draggable="false"></div></div><div class="hole" data-idx="8"><div class="moleWrap"><img class="mole" alt="角色" draggable="false"></div></div></div>
+
+        <!-- ✅ 開始遮罩：加入得分機制（用圖檔小圖案） -->
+        <div class="overlay show" id="startOverlay">
+          <div class="modal">
+            <h2>開始遊戲</h2>
+
+            <p>
+              ⏱️ 99 秒制：前 30 秒 1 秒/隻；後段 0.7 秒/隻。<br>
+              命中會立刻出下一隻，加快節奏。
+            </p>
+
+            <div class="scoreList" id="scoreList">
+        <div class="scoreRow" style="margin-top:2px; opacity:.9;">
+          <div class="scoreText" style="font-weight:900;">得分機制：</div>
+        </div>
+        
+            <div class="scoreRow">
+              <img class="scoreIcon" src="./阿鹿鹿文創 打鹿鼠_files/lulu4.png" alt="阿水">
+              <div class="scoreText">阿水　<b>+1</b>（25%）</div>
+            </div>
+          
+            <div class="scoreRow">
+              <img class="scoreIcon" src="./阿鹿鹿文創 打鹿鼠_files/lulu1.png" alt="鹿鹿">
+              <div class="scoreText">鹿鹿　<b>+1</b>（25%）</div>
+            </div>
+          
+            <div class="scoreRow">
+              <img class="scoreIcon" src="./阿鹿鹿文創 打鹿鼠_files/lulu2.png" alt="鹿爸">
+              <div class="scoreText">鹿爸　<b>+2</b>（20%）</div>
+            </div>
+          
+            <div class="scoreRow">
+              <img class="scoreIcon" src="./阿鹿鹿文創 打鹿鼠_files/lulu3.png" alt="花媽">
+              <div class="scoreText">花媽　<b>+3</b>（15%）</div>
+            </div>
+          
+            <div class="scoreRow">
+              <img class="scoreIcon" src="./阿鹿鹿文創 打鹿鼠_files/lulu5.png" alt="生氣鹿鹿">
+              <div class="scoreText">生氣鹿鹿　<b>-3</b>（15%）</div>
+            </div>
+          
+      </div>
+
+            <div class="btnrow">
+              <button class="primary" id="startBtn">開始</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 結算遮罩：新增隨機鹿鹿圖 -->
+        <div class="overlay" id="endOverlay">
+          <div class="modal">
+            <img class="endImg" id="endImg" alt="鹿鹿" src="./阿鹿鹿文創 打鹿鼠_files/lulu1.png">
+            <h2>結算</h2>
+            <p>原因：<b id="endReason">時間到</b></p>
+            <p>你的分數：<b id="finalScore">0</b></p>
+
+            <p>本機排行榜 Top 10</p>
+            <div style="max-height:260px; overflow:auto; border-radius:14px;">
+              <table>
+                <thead>
+                  <tr><th>#</th><th>玩家</th><th>分數</th><th>時間</th></tr>
+                </thead>
+                <tbody id="rankBody"><tr><td colspan="4">—</td></tr></tbody>
+              </table>
+            </div>
+
+            <div class="btnrow">
+              <button class="primary" id="againBtn">再來一局</button>
+              <button class="ghost" id="clearRankBtn">清空排行榜</button>
+              <button class="danger" id="closeBtn">關閉</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /********************
+     * 圖片（你提供的 5 張）
+     ********************/
+    const ASSETS = {
+      lulu:   "https://github.com/z883662/Aruru/blob/main/lulu1.png?raw=true", // 鹿鹿
+      baba:  "https://github.com/z883662/Aruru/blob/main/lulu2.png?raw=true", // 鹿爸
+      mama:  "https://github.com/z883662/Aruru/blob/main/lulu3.png?raw=true", // 花媽
+      asui:  "https://github.com/z883662/Aruru/blob/main/lulu4.png?raw=true", // 阿水
+      angry: "https://github.com/z883662/Aruru/blob/main/lulu5.png?raw=true"  // 生氣鹿鹿
+    };
+
+    // 結算圖：5 張隨機抽
+    const END_IMAGES = [ASSETS.lulu, ASSETS.baba, ASSETS.mama, ASSETS.asui, ASSETS.angry];
+
+    /********************
+     * 得分 & 機率（最終版）
+     ********************/
+    const SCORE = { asui:+1, lulu:+1, baba:+2, mama:+3, angry:-3 };
+
+    const SPAWN_PERCENT = [
+      { type: "asui",  pct: 25, name: "阿水" },
+      { type: "lulu",  pct: 25, name: "鹿鹿" },
+      { type: "baba",  pct: 20, name: "鹿爸" },
+      { type: "mama",  pct: 15, name: "花媽" },
+      { type: "angry", pct: 15, name: "生氣鹿鹿" }
+    ];
+
+    /********************
+     * 節奏設定
+     ********************/
+    const GAME_SECONDS = 99;
+    const PHASE1_SECONDS = 30;
+    const PHASE2_SECONDS = 30;
+    const POP_MS_PHASE1 = 1000;
+    const POP_MS_PHASE2 = 700;
+    const LIVE_MS = 720;
+
+    /********************
+     * DOM
+     ********************/
+    const gridEl = document.getElementById("grid");
+
+    const scoreEl = document.getElementById("score");
+    const comboEl = document.getElementById("combo");
+    const speedEl = document.getElementById("speed");
+
+    const rankBtn = document.getElementById("rankBtn");
+
+    const startOverlay = document.getElementById("startOverlay");
+    const endOverlay = document.getElementById("endOverlay");
+    const startBtn = document.getElementById("startBtn");
+    const againBtn = document.getElementById("againBtn");
+    const clearRankBtn = document.getElementById("clearRankBtn");
+    const closeBtn = document.getElementById("closeBtn");
+    const endReasonEl = document.getElementById("endReason");
+    const finalScoreEl = document.getElementById("finalScore");
+    const rankBodyEl = document.getElementById("rankBody");
+    const endImgEl = document.getElementById("endImg");
+    const scoreListEl = document.getElementById("scoreList");
+
+    const bgmToggleBtn = document.getElementById("bgmToggleBtn");
+    const sfxToggleBtn = document.getElementById("sfxToggleBtn");
+    const bgmVolEl = document.getElementById("bgmVol");
+    const sfxVolEl = document.getElementById("sfxVol");
+
+    /********************
+     * 狀態
+     ********************/
+    let running = false;
+    let score = 0;
+    let timeLeft = GAME_SECONDS;
+    let combo = 0;
+
+    let popTimer = null;
+    let countdownTimer = null;
+
+    const HOLE_COUNT = 9;
+    const holes = [];
+    const activeMap = new Map(); // holeIndex -> {type, hit, timeoutId}
+
+    /********************
+     * 音訊：程式生成 + 可調音量
+     ********************/
+    let audioCtx = null;
+    let masterGain = null;
+    let bgmGain = null;
+    let sfxGain = null;
+
+    let bgmEnabled = true;
+    let sfxEnabled = true;
+
+    let bgmTimer = null;
+    let bgmNodes = [];
+    let bgmStep = 0;
+
+    function ensureAudio(){
+      if (!audioCtx){
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.9;
+        masterGain.connect(audioCtx.destination);
+
+        bgmGain = audioCtx.createGain();
+        sfxGain = audioCtx.createGain();
+
+        bgmGain.connect(masterGain);
+        sfxGain.connect(masterGain);
+
+        applyVolumes();
+      }
+    }
+
+    function applyVolumes(){
+      const bgmV = (parseInt(bgmVolEl.value,10) || 0) / 100;
+      const sfxV = (parseInt(sfxVolEl.value,10) || 0) / 100;
+
+      if (bgmGain) bgmGain.gain.value = bgmEnabled ? (bgmV * 0.25) : 0;  // BGM 更柔
+      if (sfxGain) sfxGain.gain.value = sfxEnabled ? (sfxV * 0.60) : 0;
+    }
+
+    function beep({freq=440, dur=0.06, vol=0.06, type="sine"} = {}){
+      if (!audioCtx) return;
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+
+      o.type = type;
+      o.frequency.value = freq;
+
+      const t0 = audioCtx.currentTime;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(Math.max(0.0002, vol), t0 + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+
+      o.connect(g);
+      g.connect(sfxGain);
+
+      o.start(t0);
+      o.stop(t0 + dur + 0.02);
+    }
+
+    function sfxHitNormal(){
+      if (!sfxEnabled) return;
+      beep({freq: 520, dur: 0.045, vol: 0.055, type:"triangle"});
+    }
+    function sfxHitBaba(){
+      if (!sfxEnabled) return;
+      beep({freq: 660, dur: 0.06, vol: 0.065, type:"sine"});
+      setTimeout(()=>beep({freq: 880, dur: 0.06, vol: 0.06, type:"sine"}), 55);
+    }
+    function sfxHitAngry(){
+      if (!sfxEnabled) return;
+      beep({freq: 170, dur: 0.08, vol: 0.07, type:"sawtooth"});
+      setTimeout(()=>beep({freq: 130, dur: 0.06, vol: 0.065, type:"sawtooth"}), 70);
+    }
+    function sfxHitMama(){
+      if (!sfxEnabled) return;
+      beep({freq: 740, dur: 0.05, vol: 0.06, type:"triangle"});
+      setTimeout(()=>beep({freq: 980, dur: 0.05, vol: 0.055, type:"triangle"}), 55);
+    }
+
+    function stopBGM(){
+      if (bgmTimer){
+        clearInterval(bgmTimer);
+        bgmTimer = null;
+      }
+      bgmNodes.forEach(n=>{ try{ n.stop(); }catch(e){} });
+      bgmNodes = [];
+    }
+
+    function startBGM(){
+      if (!audioCtx) return;
+      stopBGM();
+      if (!bgmEnabled) return;
+
+      const scale = [261.63, 293.66, 329.63, 392.00, 440.00]; // C D E G A
+      const chordRoots = [261.63, 220.00, 293.66, 246.94];
+      bgmStep = 0;
+
+      const lp = audioCtx.createBiquadFilter();
+      lp.type = "lowpass";
+      lp.frequency.value = 900;
+      lp.connect(bgmGain);
+
+      function playPad(root){
+        const freqs = [root, root*1.25, root*1.5];
+        freqs.forEach((f)=>{
+          const o = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          o.type = "sine";
+          o.frequency.value = f;
+
+          const t0 = audioCtx.currentTime;
+          g.gain.setValueAtTime(0.0001, t0);
+          g.gain.exponentialRampToValueAtTime(0.35, t0 + 0.08);
+          g.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.6);
+
+          o.connect(g);
+          g.connect(lp);
+
+          o.start(t0);
+          o.stop(t0 + 1.7);
+          bgmNodes.push(o);
+        });
+      }
+
+      function playNote(freq){
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = "triangle";
+        o.frequency.value = freq;
+
+        const t0 = audioCtx.currentTime;
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(0.24, t0 + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.22);
+
+        o.connect(g);
+        g.connect(lp);
+
+        o.start(t0);
+        o.stop(t0 + 0.26);
+        bgmNodes.push(o);
+      }
+
+      const intervalMs = 360;
+      bgmTimer = setInterval(()=>{
+        if (!bgmEnabled) return;
+
+        const chord = chordRoots[Math.floor(bgmStep / 4) % chordRoots.length];
+        if (bgmStep % 4 === 0) playPad(chord);
+
+        const idxBase = (bgmStep % 8 < 4) ? 0 : 2;
+        const idx = Math.max(0, Math.min(scale.length-1, idxBase + (Math.random()<0.5 ? 0 : 1)));
+        playNote(scale[idx]);
+
+        bgmStep++;
+      }, intervalMs);
+    }
+
+    function bindAudioUI(){
+      bgmToggleBtn.addEventListener("click", ()=>{
+        ensureAudio();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        bgmEnabled = !bgmEnabled;
+        bgmToggleBtn.textContent = `BGM：${bgmEnabled ? "ON" : "OFF"}`;
+        applyVolumes();
+        if (bgmEnabled && running) startBGM();
+        else stopBGM();
+      });
+
+      sfxToggleBtn.addEventListener("click", ()=>{
+        ensureAudio();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        sfxEnabled = !sfxEnabled;
+        sfxToggleBtn.textContent = `SFX：${sfxEnabled ? "ON" : "OFF"}`;
+        applyVolumes();
+      });
+
+      bgmVolEl.addEventListener("input", ()=>{ ensureAudio(); applyVolumes(); });
+      sfxVolEl.addEventListener("input", ()=>{ ensureAudio(); applyVolumes(); });
+    }
+
+    /********************
+     * 排行榜（localStorage）
+     ********************/
+    const RANK_KEY = "lu_whack_rank_final_v6";
+    function loadRank(){
+      try{ return JSON.parse(localStorage.getItem(RANK_KEY) || "[]"); }
+      catch(e){ return []; }
+    }
+    function saveRank(list){ localStorage.setItem(RANK_KEY, JSON.stringify(list)); }
+    function addToRank(name, sc){
+      const now = new Date();
+      const stamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")} ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+      const list = loadRank();
+      list.push({ name, score: sc, time: stamp });
+      list.sort((a,b)=> b.score - a.score);
+      const top10 = list.slice(0,10);
+      saveRank(top10);
+      return top10;
+    }
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
+    }
+    function renderRank(list){
+      if (!list || list.length === 0){
+        rankBodyEl.innerHTML = `<tr><td colspan="4">—</td></tr>`;
+        return;
+      }
+      rankBodyEl.innerHTML = list.map((r,i)=>`
+        <tr>
+          <td>${i+1}</td>
+          <td>${escapeHtml(r.name || "玩家")}</td>
+          <td><b>${r.score}</b></td>
+          <td>${escapeHtml(r.time || "")}</td>
+        </tr>
+      `).join("");
+    }
+
+    /********************
+     * HUD：速度倍率（1.00x or 1.43x）
+     ********************/
+    function currentPopMs(){
+      const elapsed = GAME_SECONDS - timeLeft;
+      if (elapsed < PHASE1_SECONDS) return POP_MS_PHASE1;
+
+      const remaining = timeLeft;
+      if (remaining <= PHASE2_SECONDS) return POP_MS_PHASE2;
+
+      return POP_MS_PHASE2;
+    }
+    function tempoMultiplier(){ return (POP_MS_PHASE1 / currentPopMs()); }
+    function updateHUD(){
+      scoreEl.textContent = score;
+      comboEl.textContent = combo;
+      speedEl.textContent = tempoMultiplier().toFixed(2);
+    }
+
+    /********************
+     * 開始視窗：得分列表（用圖檔 icon）
+     ********************/
+    function signScore(v){
+      return v > 0 ? `+${v}` : `${v}`;
+    }
+    function buildScoreList(){
+      // 固定順序（照你給的）
+      const order = ["asui","lulu","baba","mama","angry"];
+      const meta = Object.fromEntries(SPAWN_PERCENT.map(x=>[x.type, x]));
+      scoreListEl.innerHTML = `
+        <div class="scoreRow" style="margin-top:2px; opacity:.9;">
+          <div class="scoreText" style="font-weight:900;">得分機制：</div>
+        </div>
+        ${order.map(t=>{
+          const m = meta[t];
+          const sc = SCORE[t] ?? 0;
+          const pct = m?.pct ?? 0;
+          const name = m?.name ?? t;
+          const iconSrc =
+            t==="asui" ? ASSETS.asui :
+            t==="lulu" ? ASSETS.lulu :
+            t==="baba" ? ASSETS.baba :
+            t==="mama" ? ASSETS.mama :
+            ASSETS.angry;
+
+          return `
+            <div class="scoreRow">
+              <img class="scoreIcon" src="${iconSrc}" alt="${name}">
+              <div class="scoreText">${name}　<b>${signScore(sc)}</b>（${pct}%）</div>
+            </div>
+          `;
+        }).join("")}
+      `;
+    }
+
+    /********************
+     * 遊戲格子
+     ********************/
+    function buildGrid(){
+      gridEl.innerHTML = "";
+      holes.length = 0;
+
+      for (let i=0; i<9; i++){
+        const hole = document.createElement("div");
+        hole.className = "hole";
+        hole.dataset.idx = i;
+
+        const wrap = document.createElement("div");
+        wrap.className = "moleWrap";
+
+        const img = document.createElement("img");
+        img.className = "mole";
+        img.alt = "角色";
+        img.draggable = false;
+
+        wrap.appendChild(img);
+        hole.appendChild(wrap);
+
+        hole.addEventListener("pointerdown", (ev)=>{
+          ev.preventDefault();
+          if (!running) return;
+          handleHit(i);
+        });
+
+        gridEl.appendChild(hole);
+        holes.push({ hole, img });
+      }
+    }
+
+    function preloadImages(){
+      const paths = Object.values(ASSETS);
+      return Promise.all(paths.map(p => new Promise((res)=>{
+        const im = new Image();
+        im.onload = ()=>res(true);
+        im.onerror = ()=>res(false);
+        im.src = p;
+      })));
+    }
+
+    function pickTypeByPercent(){
+      const r = Math.random() * 100;
+      let acc = 0;
+      for (const it of SPAWN_PERCENT){
+        acc += it.pct;
+        if (r < acc) return it.type;
+      }
+      return "lulu";
+    }
+
+    /********************
+     * 生成/消失
+     ********************/
+    function schedulePop(delayOverride){
+      clearTimeout(popTimer);
+      if (!running) return;
+
+      const delay = (typeof delayOverride === "number") ? delayOverride : currentPopMs();
+      popTimer = setTimeout(()=>{
+        spawnOne();
+        schedulePop();
+      }, delay);
+    }
+
+    function spawnOne(){
+      const empty = [];
+      for (let i=0;i<9;i++){
+        if (!activeMap.has(i)) empty.push(i);
+      }
+      if (empty.length === 0) return;
+
+      const idx = empty[Math.floor(Math.random()*empty.length)];
+      const type = pickTypeByPercent();
+      const { hole, img } = holes[idx];
+
+      hole.classList.add("active");
+      hole.classList.remove("shake");
+
+      img.src =
+        type === "lulu"  ? ASSETS.lulu  :
+        type === "asui"  ? ASSETS.asui  :
+        type === "baba"  ? ASSETS.baba  :
+        type === "mama"  ? ASSETS.mama  :
+        ASSETS.angry;
+
+      const state = { type, hit:false, timeoutId:null };
+      state.timeoutId = setTimeout(()=>{
+        // 漏打：連擊歸零（不結束）
+        if (!state.hit) combo = 0;
+
+        hole.classList.remove("active","shake");
+        activeMap.delete(idx);
+        updateHUD();
+      }, LIVE_MS);
+
+      activeMap.set(idx, state);
+    }
+
+    function shake(hole){
+      hole.classList.remove("shake");
+      void hole.offsetWidth;
+      hole.classList.add("shake");
+      setTimeout(()=>hole.classList.remove("shake"), 220);
+    }
+
+    function handleHit(idx){
+      const state = activeMap.get(idx);
+      if (!state || state.hit) return;
+
+      state.hit = true;
+      clearTimeout(state.timeoutId);
+
+      const { hole } = holes[idx];
+      shake(hole);
+
+      // 計分
+      const delta = SCORE[state.type] ?? 0;
+      score = Math.max(0, score + delta);
+
+      // 連擊
+      if (state.type === "angry") combo = 0;
+      else combo += 1;
+
+      updateHUD();
+
+      // 音效
+      ensureAudio();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      applyVolumes();
+
+      if (state.type === "asui" || state.type === "lulu") sfxHitNormal();
+      else if (state.type === "baba") sfxHitBaba();
+      else if (state.type === "mama") sfxHitMama();
+      else sfxHitAngry();
+
+      setTimeout(()=>{
+        hole.classList.remove("active","shake");
+        activeMap.delete(idx);
+      }, 120);
+
+      // 命中立刻出下一隻
+      schedulePop(80);
+    }
+
+    /********************
+     * 倒數/結算
+     ********************/
+    function startCountdown(){
+      clearInterval(countdownTimer);
+      timeLeft = GAME_SECONDS;
+      updateHUD();
+
+      countdownTimer = setInterval(()=>{
+        if (!running) return;
+        timeLeft -= 1;
+        if (timeLeft <= 0){
+          timeLeft = 0;
+          endGame("時間到");
+        }else{
+          updateHUD();
+        }
+      }, 1000);
+    }
+
+    function pickRandomEndImg(){
+      return END_IMAGES[Math.floor(Math.random() * END_IMAGES.length)];
+    }
+
+    function startGame(){
+      running = true;
+      score = 0;
+      combo = 0;
+      timeLeft = GAME_SECONDS;
+
+      for (const [i, st] of activeMap.entries()){
+        clearTimeout(st.timeoutId);
+        holes[i].hole.classList.remove("active","shake");
+      }
+      activeMap.clear();
+
+      ensureAudio();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      applyVolumes();
+      if (bgmEnabled) startBGM();
+
+      updateHUD();
+      startOverlay.classList.remove("show");
+      endOverlay.classList.remove("show");
+
+      startCountdown();
+      schedulePop();
+    }
+
+    function endGame(reason){
+      if (!running) return;
+      running = false;
+
+      clearTimeout(popTimer);
+      clearInterval(countdownTimer);
+
+      for (const [i, st] of activeMap.entries()){
+        clearTimeout(st.timeoutId);
+        holes[i].hole.classList.remove("active","shake");
+      }
+      activeMap.clear();
+
+      stopBGM();
+
+      endImgEl.src = pickRandomEndImg();
+      endReasonEl.textContent = reason || "結束";
+      finalScoreEl.textContent = score;
+
+      const top10 = addToRank("玩家", score);
+      renderRank(top10);
+
+      endOverlay.classList.add("show");
+    }
+
+    /********************
+     * 事件
+     ********************/
+    startBtn.addEventListener("click", startGame);
+    againBtn.addEventListener("click", startGame);
+    clearRankBtn.addEventListener("click", ()=>{
+      localStorage.removeItem(RANK_KEY);
+      renderRank([]);
+    });
+    closeBtn.addEventListener("click", ()=>{
+      endOverlay.classList.remove("show");
+      startOverlay.classList.add("show");
+    });
+    rankBtn.addEventListener("click", ()=>{
+      renderRank(loadRank());
+      endImgEl.src = pickRandomEndImg();
+      endReasonEl.textContent = "排行榜";
+      finalScoreEl.textContent = score;
+      endOverlay.classList.add("show");
+    });
+
+    /********************
+     * 初始化
+     ********************/
+    (async function init(){
+      buildGrid();
+      buildScoreList();
+      renderRank(loadRank());
+      bindAudioUI();
+      updateHUD();
+
+      const ok = await preloadImages();
+      if (!ok.every(Boolean)) console.warn("部分圖片載入失敗，請確認 GitHub raw 連結是否可存取");
+      endImgEl.src = pickRandomEndImg();
+    })();
+  </script>
+
+
+</body></html>
